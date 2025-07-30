@@ -31,7 +31,7 @@ var current_frame_data : Array[int] = []
 
 
 func _ready():
-	#initialize_constants()
+	initialize_constants()
 	#initialize_frame_data()
 	#connect to any relevent signals
 	pass
