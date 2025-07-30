@@ -20,7 +20,7 @@ const DIMENSIONS : Vector2 = Vector2(16,16)
 
 enum FrameDataType 
 {
-	COYOTE_JUMP, INPUT_BUFFER, DASH_WIND_UP, WALL_JUMP_LOCK
+	COYOTE_JUMP, INPUT_BUFFER, DASH_WIND_UP, WALL_JUMP_LOCK, COYOTE_WALL_JUMP
 }
 
 ##constants for horizontal movement
@@ -32,16 +32,26 @@ var acceleration_due_to_gravity : float
 var gravity_snap_multiplier : float
 
 var current_frame_data : Array[int] = []
+var left_wall_jump_ray_casts : Array[RayCast2D] = []
+var right_wall_jump_ray_casts : Array[RayCast2D] = []
+
+var wall_jump_direction : float = 0
 
 var current_horizontal_movement : float
 
 var can_input : bool = true
 var can_move : bool = true
 
+@onready var hurtbox = $Hurtbox
+@onready var wall_jump_cooldown_timer = $WallJumpCooldownTimer
+
 
 func _ready():
 	initialize_constants()
 	initialize_frame_data()
+	initialize_ray_casts(3)
+	hurtbox.body_entered.connect(on_hit)
+	wall_jump_cooldown_timer.timeout.connect(on_wall_jump_complete)
 	#connect to any relevent signals
 	
 	
@@ -50,18 +60,25 @@ func _physics_process(delta):
 	handle_inputs()
 	handle_jump(delta)
 	handle_movement(delta)
+	handle_wall_jump()
 	handle_friction(delta)
+	move_and_slide()
 	
 
 func initialize_constants():
-	acceleration_speed = max_speed / acceleration_frames
-	deacceleration_speed = max_speed / deacceleration_frames
+	acceleration_speed = max_speed / (float(acceleration_frames) / 60 )
+	deacceleration_speed = max_speed / (float(deacceleration_frames) / 60 )
+	print(acceleration_speed)
+	print(deacceleration_speed)
 	
-	initial_jump_velocity = 2 * jump_hieght_relative_to_player_height * DIMENSIONS.y / jump_accent_frames
-	acceleration_due_to_gravity = 2 * jump_hieght_relative_to_player_height * DIMENSIONS.y / pow(jump_accent_frames, 2)
+	initial_jump_velocity = 2 * jump_hieght_relative_to_player_height * DIMENSIONS.y / (float(jump_accent_frames) / 60)
+	print(initial_jump_velocity)
+	acceleration_due_to_gravity = 2 * jump_hieght_relative_to_player_height * DIMENSIONS.y / pow(float(jump_accent_frames) / 60, 2)
+	print(acceleration_due_to_gravity)
 	
-	var decent_acel = 2 * jump_hieght_relative_to_player_height * DIMENSIONS.y / pow(jump_deccent_frames, 2)
+	var decent_acel = 2 * jump_hieght_relative_to_player_height * DIMENSIONS.y / pow(float(jump_deccent_frames) / 60.0, 2)
 	gravity_snap_multiplier = decent_acel / acceleration_due_to_gravity
+	print(gravity_snap_multiplier)
 	
 func initialize_frame_data():
 	for type in FrameDataType.keys():
@@ -70,19 +87,38 @@ func initialize_frame_data():
 	current_frame_data[FrameDataType.INPUT_BUFFER] = input_buffer_frames
 	current_frame_data[FrameDataType.COYOTE_JUMP] = coyote_jump_frames
 	current_frame_data[FrameDataType.WALL_JUMP_LOCK] = wall_jump_input_lock_frames
+	current_frame_data[FrameDataType.COYOTE_WALL_JUMP] = coyote_jump_frames
+	
+func initialize_ray_casts(amount : int):
+	var increment : float = DIMENSIONS.y / (amount - 1)
+	for i in amount:
+		var raycast := RayCast2D.new()
+		raycast.position.y = DIMENSIONS.y/2 - increment * i
+		raycast.target_position = Vector2(DIMENSIONS.x/2 + 0.5, 0)
+		self.add_child(raycast)
+		right_wall_jump_ray_casts.append(raycast)
+		
+		raycast = RayCast2D.new()
+		raycast.position.y = DIMENSIONS.y/2 - increment * i
+		raycast.target_position = Vector2(-DIMENSIONS.x/2 - 0.5, 0)
+		self.add_child(raycast)
+		left_wall_jump_ray_casts.append(raycast)
+		
 	
 func increment_frame_data():
 	current_frame_data[FrameDataType.INPUT_BUFFER] += 1
 	current_frame_data[FrameDataType.COYOTE_JUMP] += 1
+	current_frame_data[FrameDataType.COYOTE_WALL_JUMP] += 1
 	current_frame_data[FrameDataType.WALL_JUMP_LOCK] += 1
 	
 func handle_inputs():
-	if not can_input:
+	if not can_input or not can_move:
 		current_horizontal_movement = 0
 		return
 	current_horizontal_movement = Input.get_axis("move_left", "move_right")
 	if Input.is_action_just_pressed("jump"):
 		current_frame_data[FrameDataType.INPUT_BUFFER] = 0
+		print("jump key pressed!")
 	
 	
 	
@@ -92,17 +128,66 @@ func handle_jump(delta : float):
 	if not can_move:
 		return
 		
-	velocity.y += acceleration_due_to_gravity * delta * 1 if velocity.y < 0 else gravity_snap_multiplier
+	velocity.y += acceleration_due_to_gravity * delta * (1 if velocity.y < 0 else gravity_snap_multiplier)
 	
 	if not can_input:
 		return
 		
 	if current_frame_data[FrameDataType.COYOTE_JUMP] < coyote_jump_frames and current_frame_data[FrameDataType.INPUT_BUFFER]  < input_buffer_frames:
-		velocity.y -= initial_jump_velocity
+		velocity.y = -initial_jump_velocity
+		current_frame_data[FrameDataType.COYOTE_JUMP] = coyote_jump_frames
+		current_frame_data[FrameDataType.INPUT_BUFFER]  = input_buffer_frames
 		
 	
 func handle_movement(delta : float):
-	pass
+	var direction = velocity.abs().x / velocity.x
+	velocity.x += current_horizontal_movement * (acceleration_speed if direction > 0 else deacceleration_speed) * delta
+	if absf(velocity.x) > max_speed:
+		velocity.x = max_speed * direction
+		
+func handle_wall_jump():
+	if not can_input or not can_move:
+		return
+		
+
+	for raycast in left_wall_jump_ray_casts:
+		if raycast.is_colliding():
+			current_frame_data[FrameDataType.COYOTE_WALL_JUMP] = 0
+			wall_jump_direction = -1
+	for raycast in right_wall_jump_ray_casts:
+		if raycast.is_colliding():
+			current_frame_data[FrameDataType.COYOTE_WALL_JUMP] = 0
+			wall_jump_direction = 1
+	
+	if current_frame_data[FrameDataType.COYOTE_WALL_JUMP] < coyote_jump_frames and current_frame_data[FrameDataType.INPUT_BUFFER] < input_buffer_frames and not is_on_floor():
+		velocity.x = max_speed * wall_jump_horizontal_multiplier * -wall_jump_direction
+		velocity.y = -initial_jump_velocity * wall_jump_vertical_multiplier
+		current_frame_data[FrameDataType.COYOTE_WALL_JUMP] = coyote_jump_frames
+		current_frame_data[FrameDataType.INPUT_BUFFER] = input_buffer_frames
+		can_input = false
+		wall_jump_cooldown_timer.start(float(wall_jump_input_lock_frames) / 60)
+			
+	
+		
+	
+	
+		
 	
 func handle_friction(delta : float):
-	pass
+	if current_horizontal_movement != 0.0 or velocity.x == 0 or not can_input:
+		return
+	
+	var direction = velocity.abs().x / velocity.x
+	var amount = deacceleration_speed * delta * direction
+	if velocity.abs().x - absf(amount) > 0:
+		velocity.x -= deacceleration_speed * delta * direction
+	else:
+		velocity.x = 0
+		
+func on_hit(body : Node2D):
+	EventBus.player_death.emit()
+	velocity = Vector2.ZERO
+	
+	
+func on_wall_jump_complete():
+	can_input = true

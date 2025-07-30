@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=4 uid="uid://bscflq5uiabvg"]
+
+[ext_resource type="Script" uid="uid://1frpvv11paxd" path="res://scripts/game.gd" id="1_lnu2h"]
+[ext_resource type="Texture2D" uid="uid://cmhkvdptthx0f" path="res://Sprites/Test_tilemap.png" id="1_lsern"]
+[ext_resource type="PackedScene" uid="uid://dblfe5fohidmp" path="res://scenes/player.tscn" id="2_yqjtg"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_33adx"]
+texture = ExtResource("1_lsern")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:0/0 = 0
+2:0/0/physics_layer_1/polygon_0/points = PackedVector2Array(-6, 5.875, 6, 6.125, 6, 8, -5.875, 8)
+3:0/0 = 0
+3:0/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -6, -6, -6, -5.875, 6, -8, 6)
+3:1/0 = 0
+3:1/0/physics_layer_1/polygon_0/points = PackedVector2Array(-4.875, -5, 5, -5.125, 5.125, 5, -4.875, 4.875)
+3:3/0 = 0
+2:1/0 = 0
+2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, 3.09359, 8, 3.0052, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_we5ph"]
+physics_layer_0/collision_layer = 1
+physics_layer_1/collision_layer = 2
+physics_layer_1/collision_mask = 2
+sources/0 = SubResource("TileSetAtlasSource_33adx")
+
+[node name="game" type="Node2D" node_paths=PackedStringArray("player_respawn_location", "player")]
+script = ExtResource("1_lnu2h")
+player_respawn_location = NodePath("Node2D")
+player = NodePath("player")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAD+/wAAAAAAAAAAAAD9/wAAAAAAAAAAAAD9////AAAAAAAAAAD9//7/AAAAAAAAAAD9//3/AAAAAAAAAAD9//z/AAAAAAAAAAD9//v/AAAAAAAAAAD9//r/AAAAAAAAAAAAAAEAAAAAAAAAAAADAAEAAAAAAAAAAAADAAAAAAAAAAAAAAADAP//AAAAAAAAAAAEAP//AAAAAAAAAAAFAP//AAAAAAAAAAAGAP//AAAAAAAAAAAHAP//AAAAAAAAAAAHAP7/AAAAAAAAAAAHAP3/AAAAAAAAAAAEAPz/AAAAAAAAAAAEAPv/AAAAAAAAAAAEAPr/AAAAAAAAAAADAPr/AAAAAAAAAAACAPr/AAAAAAAAAAABAPr/AAAAAAAAAAAAAPr/AAAAAAAAAAD///r/AAAAAAAAAAD+//r/AAAAAAAAAAAHAPz/AAAAAAAAAAAHAPv/AAAAAAAAAAAHAPr/AAAAAAAAAAAHAPn/AAAAAAAAAAAHAPj/AAAAAAAAAAAHAPf/AAAAAAAAAAAHAPb/AAAAAAAAAAD///n/AAAAAAAAAAD///j/AAAAAAAAAAD///f/AAAAAAAAAAD///b/AAAAAAAAAAD///X/AAAAAAAAAAD+//X/AAAAAAAAAAD9//X/AAAAAAAAAAD9//T/AAAAAAAAAAD9//P/AAAAAAAAAAD9//L/AAAAAAAAAAD9//H/AAAAAAAAAAD9//D/AAAAAAAAAAD+//D/AAAAAAAAAAD///D/AAAAAAAAAAAAAPD/AAAAAAAAAAABAPD/AAAAAAAAAAACAPD/AAAAAAAAAAADAPD/AAAAAAAAAAAEAPD/AAAAAAAAAAAFAPD/AAAAAAAAAAAHAPX/AAAAAAAAAAAGAPX/AAAAAAAAAAAIAPX/AAAAAAAAAAAJAPX/AAAAAAAAAAAJAPT/AAAAAAAAAAAJAPP/AAAAAAAAAAAKAPP/AAAAAAAAAAALAPP/AAAAAAAAAAALAPL/AAAAAAAAAAALAPH/AAAAAAAAAAALAPD/AAAAAAAAAAAIAPD/AAAAAAAAAAAHAPD/AAAAAAAAAAAGAPD/AAAAAAAAAAAAAPn/AAACAAEAAAABAAEAAAACAAAAAAACAAEAAAACAAAAAAAAAAIAAAAAAAAAAAABAAIAAAAAAAAAAAACAAIAAAAAAAAAAAADAAIAAAAAAAAAAAA=")
+tile_set = SubResource("TileSet_we5ph")
+
+[node name="player" parent="." instance=ExtResource("2_yqjtg")]
+position = Vector2(0, -8)
+acceleration_frames = 10
+deacceleration_frames = 6
+jump_accent_frames = 20
+jump_deccent_frames = 15
+coyote_jump_frames = 15
+input_buffer_frames = 15
+dash_wind_up_frames = 60
+wall_jump_input_lock_frames = 30
+max_speed = 100.0
+jump_hieght_relative_to_player_height = 2.0
+wall_jump_horizontal_multiplier = 0.0
+wall_jump_vertical_multiplier = 0.0
+
+[node name="Camera2D" type="Camera2D" parent="player"]
+zoom = Vector2(4, 4)
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(0, -8)

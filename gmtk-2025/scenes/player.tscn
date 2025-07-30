@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dblfe5fohidmp"]
+[gd_scene load_steps=5 format=3 uid="uid://dblfe5fohidmp"]
 
 [ext_resource type="Texture2D" uid="uid://bpkvl7gvwxesc" path="res://icon.svg" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://b7hd2yrulslfy" path="res://scripts/player.gd" id="1_g2els"]
@@ -6,8 +6,13 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
 size = Vector2(16, 16)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qhqgy"]
+size = Vector2(16, 16)
+
 [node name="player" type="CharacterBody2D"]
 script = ExtResource("1_g2els")
+wall_jump_horizontal_multiplier = 0.5
+wall_jump_vertical_multiplier = 0.4
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.125, 0.125)
@@ -15,3 +20,12 @@ texture = ExtResource("1_3vyb7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_g2els")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_qhqgy")
+
+[node name="WallJumpCooldownTimer" type="Timer" parent="."]
