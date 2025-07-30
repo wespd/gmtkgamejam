@@ -1,0 +1,60 @@
+[gd_scene load_steps=7 format=3 uid="uid://4t5l424au60u"]
+
+[ext_resource type="Texture2D" uid="uid://cmhkvdptthx0f" path="res://Sprites/Test_tilemap.png" id="2_mb26n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_afg43"]
+size = Vector2(16, 5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pgg5x"]
+atlas = ExtResource("2_mb26n")
+region = Rect2(32, 27, 16, 5)
+
+[sub_resource type="Animation" id="Animation_ms375"]
+resource_name = "movement"
+length = 3.0
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 1, -1.5, -32, -0.25, 0, 0.25, 0, -32, 0, 0, 1, -1.5, 0, -0.25, 0, 0, 0, 0, -0.25, 0, 0, 0),
+"times": PackedFloat32Array(0, 1, 1.5, 2.5, 3)
+}
+
+[sub_resource type="Animation" id="Animation_1tdcd"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_mb26n"]
+_data = {
+&"RESET": SubResource("Animation_1tdcd"),
+&"movement": SubResource("Animation_ms375")
+}
+
+[node name="moving_platform" type="AnimatableBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_afg43")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("AtlasTexture_pgg5x")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_mb26n")
+}
+autoplay = "movement"
