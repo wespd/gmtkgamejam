@@ -18,6 +18,11 @@ const DIMENSIONS : Vector2 = Vector2(16,16)
 @export var wall_jump_horizontal_multiplier : float
 @export var wall_jump_vertical_multiplier : float
 
+enum FrameDataType 
+{
+	COYOTE_JUMP, INPUT_BUFFER, DASH_WIND_UP, WALL_JUMP_LOCK
+}
+
 ##constants for horizontal movement
 var acceleration_speed : float
 var deacceleration_speed : float
@@ -28,21 +33,24 @@ var gravity_snap_multiplier : float
 
 var current_frame_data : Array[int] = []
 
+var current_horizontal_movement : float
+
+var can_input : bool = true
+var can_move : bool = true
 
 
 func _ready():
 	initialize_constants()
-	#initialize_frame_data()
+	initialize_frame_data()
 	#connect to any relevent signals
-	pass
 	
 	
 func _physics_process(delta):
-	#handle_inputs
-	#handle_jump
-	#handle_movement
-	#handle_friction
-	pass
+	increment_frame_data()
+	handle_inputs()
+	handle_jump(delta)
+	handle_movement(delta)
+	handle_friction(delta)
 	
 
 func initialize_constants():
@@ -56,16 +64,45 @@ func initialize_constants():
 	gravity_snap_multiplier = decent_acel / acceleration_due_to_gravity
 	
 func initialize_frame_data():
-	pass
+	for type in FrameDataType.keys():
+		print("Initializing %s" %type)
+		current_frame_data.append(0)
+	current_frame_data[FrameDataType.INPUT_BUFFER] = input_buffer_frames
+	current_frame_data[FrameDataType.COYOTE_JUMP] = coyote_jump_frames
+	current_frame_data[FrameDataType.WALL_JUMP_LOCK] = wall_jump_input_lock_frames
+	
+func increment_frame_data():
+	current_frame_data[FrameDataType.INPUT_BUFFER] += 1
+	current_frame_data[FrameDataType.COYOTE_JUMP] += 1
+	current_frame_data[FrameDataType.WALL_JUMP_LOCK] += 1
 	
 func handle_inputs():
+	if not can_input:
+		current_horizontal_movement = 0
+		return
+	current_horizontal_movement = Input.get_axis("move_left", "move_right")
+	if Input.is_action_just_pressed("jump"):
+		current_frame_data[FrameDataType.INPUT_BUFFER] = 0
+	
+	
+	
+func handle_jump(delta : float):
+	if is_on_floor():
+		current_frame_data[FrameDataType.COYOTE_JUMP] = 0
+	if not can_move:
+		return
+		
+	velocity.y += acceleration_due_to_gravity * delta * 1 if velocity.y < 0 else gravity_snap_multiplier
+	
+	if not can_input:
+		return
+		
+	if current_frame_data[FrameDataType.COYOTE_JUMP] < coyote_jump_frames and current_frame_data[FrameDataType.INPUT_BUFFER]  < input_buffer_frames:
+		velocity.y -= initial_jump_velocity
+		
+	
+func handle_movement(delta : float):
 	pass
 	
-func handle_jump():
-	pass
-	
-func handle_movement():
-	pass
-	
-func handle_friction():
+func handle_friction(delta : float):
 	pass
