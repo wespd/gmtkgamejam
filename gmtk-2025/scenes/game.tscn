@@ -51,7 +51,9 @@ zoom = Vector2(4, 4)
 [node name="Node2D" type="Node2D" parent="."]
 position = Vector2(0, -8)
 
-[node name="Node2D2" type="Node2D" parent="."]
+[node name="moving_platform" parent="." instance=ExtResource("4_lbhrr")]
 position = Vector2(8, -99)
+total_frame_time = 120
 
-[node name="moving_platform" parent="Node2D2" instance=ExtResource("4_lbhrr")]
+[node name="Marker2D" type="Marker2D" parent="moving_platform"]
+position = Vector2(0, -37)
