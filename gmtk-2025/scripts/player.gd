@@ -43,6 +43,8 @@ var can_input : bool = true
 var can_move : bool = true
 var is_dashing : bool = false
 
+var last_direction : float
+
 @onready var hurtbox = $Hurtbox
 @onready var wall_jump_cooldown_timer = $WallJumpCooldownTimer
 
@@ -117,14 +119,18 @@ func increment_frame_data():
 		print("charging dash! now at %s" %current_frame_data[FrameDataType.DASH_WIND_UP])
 	
 func handle_inputs():
-	if not can_input or not can_move or is_dashing:
-		current_horizontal_movement = 0
-		return
-	current_horizontal_movement = Input.get_axis("move_left", "move_right")
 	if Input.is_action_just_pressed("jump"):
 		current_frame_data[FrameDataType.INPUT_BUFFER] = 0
 		print("jump key pressed!")
+
+	if not can_input or not can_move or is_dashing or current_frame_data[FrameDataType.DASH_WIND_UP] != 0:
+		current_horizontal_movement = 0
+		return
 	
+
+	current_horizontal_movement = Input.get_axis("move_left", "move_right")
+	if current_horizontal_movement != 0.0:
+		last_direction = current_horizontal_movement
 	
 	
 func handle_jump(delta : float):
@@ -140,6 +146,8 @@ func handle_jump(delta : float):
 		
 	if current_frame_data[FrameDataType.COYOTE_JUMP] < coyote_jump_frames and current_frame_data[FrameDataType.INPUT_BUFFER]  < input_buffer_frames:
 		velocity.y = -initial_jump_velocity
+		if is_on_wall():
+			velocity.y += get_platform_velocity().y
 		current_frame_data[FrameDataType.COYOTE_JUMP] = coyote_jump_frames
 		current_frame_data[FrameDataType.INPUT_BUFFER]  = input_buffer_frames
 		
@@ -147,7 +155,7 @@ func handle_jump(delta : float):
 func handle_movement(delta : float):
 	var direction = velocity.abs().x / velocity.x
 	velocity.x += current_horizontal_movement * (acceleration_speed if direction > 0 else deacceleration_speed) * delta
-	if absf(velocity.x) > max_speed:
+	if absf(velocity.x) > max_speed and not is_dashing:
 		velocity.x = max_speed * direction
 		
 func handle_wall_jump():
@@ -191,8 +199,8 @@ func handle_dash():
 		current_frame_data[FrameDataType.DASH_WIND_UP] = 0
 		var time := (2 * sqrt(2 * DIMENSIONS.y / acceleration_due_to_gravity))
 		var distance := 6 * DIMENSIONS.x
-		velocity.x = 6 * DIMENSIONS.x / (time * 2)
-		velocity.y = (distance - 1/2 * acceleration_due_to_gravity * time * time)
+		velocity.x = max_speed * 1.75 * last_direction
+		velocity.y = -(distance - 1/2 * acceleration_due_to_gravity * time * time)/time
 		
 	
 func handle_friction(delta : float):
