@@ -54,6 +54,7 @@ func _ready():
 	initialize_frame_data()
 	initialize_ray_casts(3)
 	hurtbox.body_entered.connect(on_hit)
+	hurtbox.area_entered.connect(on_hit)
 	wall_jump_cooldown_timer.timeout.connect(on_wall_jump_complete)
 	#connect to any relevent signals
 	
@@ -115,21 +116,20 @@ func increment_frame_data():
 	current_frame_data[FrameDataType.COYOTE_WALL_JUMP] += 1
 	current_frame_data[FrameDataType.WALL_JUMP_LOCK] += 1
 	if Input.is_action_pressed("dash") and is_on_floor():
+		velocity.x = 0
 		current_frame_data[FrameDataType.DASH_WIND_UP] += 1
 		print("charging dash! now at %s" %current_frame_data[FrameDataType.DASH_WIND_UP])
 	
 func handle_inputs():
 	if Input.is_action_just_pressed("jump"):
 		current_frame_data[FrameDataType.INPUT_BUFFER] = 0
-		print("jump key pressed!")
 
-	if not can_input or not can_move or is_dashing or current_frame_data[FrameDataType.DASH_WIND_UP] != 0:
+	if not can_input or not can_move:
 		current_horizontal_movement = 0
 		return
-	
 
 	current_horizontal_movement = Input.get_axis("move_left", "move_right")
-	if current_horizontal_movement != 0.0:
+	if current_horizontal_movement != 0.0 and current_frame_data[FrameDataType.DASH_WIND_UP] == 0 and not is_dashing:
 		last_direction = current_horizontal_movement
 	
 	
@@ -153,6 +153,8 @@ func handle_jump(delta : float):
 		
 	
 func handle_movement(delta : float):
+	if is_dashing or current_frame_data[FrameDataType.DASH_WIND_UP] != 0:
+		return
 	var direction = velocity.abs().x / velocity.x
 	velocity.x += current_horizontal_movement * (acceleration_speed if direction > 0 else deacceleration_speed) * delta
 	if absf(velocity.x) > max_speed and not is_dashing:
@@ -187,14 +189,12 @@ func handle_wall_jump():
 func handle_dash():
 	if not can_input or not can_move:
 		return
-	if not Input.is_action_pressed("dash"):
-		current_frame_data[FrameDataType.DASH_WIND_UP] = 0
+
 		
-	if is_on_floor() or is_on_wall():
+	if is_on_floor() or is_on_wall() or velocity.x == 0.0:
 		is_dashing = false
 		
-	if current_frame_data[FrameDataType.DASH_WIND_UP] >= dash_wind_up_frames:
-		print("dashing")
+	if current_frame_data[FrameDataType.DASH_WIND_UP] >= dash_wind_up_frames and Input.is_action_just_released("dash"):
 		is_dashing = true
 		current_frame_data[FrameDataType.DASH_WIND_UP] = 0
 		var time := (2 * sqrt(2 * DIMENSIONS.y / acceleration_due_to_gravity))
@@ -202,15 +202,16 @@ func handle_dash():
 		velocity.x = max_speed * 1.75 * last_direction
 		velocity.y = -(distance - 1/2 * acceleration_due_to_gravity * time * time)/time
 		
-	
+	if not Input.is_action_pressed("dash"):
+		current_frame_data[FrameDataType.DASH_WIND_UP] = 0
 func handle_friction(delta : float):
-	if current_horizontal_movement != 0.0 or velocity.x == 0 or not can_input or is_dashing:
+	if current_horizontal_movement != 0.0 and not is_dashing or velocity.x == 0 or not can_input:
 		return
 	
 	var direction = velocity.abs().x / velocity.x
-	var amount = deacceleration_speed * delta * direction
+	var amount = deacceleration_speed * delta * direction * (0 if is_dashing and (current_horizontal_movement == last_direction or current_horizontal_movement == 0.0) else 1)
 	if velocity.abs().x - absf(amount) > 0:
-		velocity.x -= deacceleration_speed * delta * direction
+		velocity.x -= amount
 	else:
 		velocity.x = 0
 		
