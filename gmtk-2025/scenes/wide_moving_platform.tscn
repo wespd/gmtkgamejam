@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://dp03rkp5uhsvk"]
+
+[ext_resource type="Script" uid="uid://ba6gsb4y6dis1" path="res://scripts/moving_platform.gd" id="1_lh2ux"]
+[ext_resource type="Texture2D" uid="uid://dy4uidqatvapw" path="res://Sprites/Test_tilemap_new.png" id="2_lh2ux"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_afg43"]
+size = Vector2(32, 5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pgg5x"]
+atlas = ExtResource("2_lh2ux")
+region = Rect2(32, 43, 32, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1tdcd"]
+size = Vector2(30, 2)
+
+[node name="wide_moving_platform" type="AnimatableBody2D"]
+script = ExtResource("1_lh2ux")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_afg43")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("AtlasTexture_pgg5x")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 2)
+shape = SubResource("RectangleShape2D_1tdcd")
