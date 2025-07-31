@@ -47,6 +47,7 @@ var last_direction : float
 
 @onready var hurtbox = $Hurtbox
 @onready var wall_jump_cooldown_timer = $WallJumpCooldownTimer
+@onready var area_2d = $Area2D
 
 
 func _ready():
@@ -55,6 +56,7 @@ func _ready():
 	initialize_ray_casts(3)
 	hurtbox.body_entered.connect(on_hit)
 	hurtbox.area_entered.connect(on_hit)
+	area_2d.area_entered.connect(on_enter_portal)
 	wall_jump_cooldown_timer.timeout.connect(on_wall_jump_complete)
 	#connect to any relevent signals
 	
@@ -218,6 +220,9 @@ func handle_friction(delta : float):
 func on_hit(body : Node2D):
 	EventBus.player_death.emit()
 	velocity = Vector2.ZERO
+	
+func on_enter_portal(body : Node2D):
+	EventBus.next_level.emit()
 	
 	
 func on_wall_jump_complete():

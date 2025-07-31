@@ -5,6 +5,7 @@ extends Node2D
 
 func _ready():
 	EventBus.player_death.connect(respawn_player)
+	EventBus.next_level.connect(func(): print("next level??"))
 	
 	
 func respawn_player():

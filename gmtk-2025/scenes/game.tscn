@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=4 uid="uid://bscflq5uiabvg"]
+[gd_scene load_steps=8 format=4 uid="uid://bscflq5uiabvg"]
 
 [ext_resource type="Script" uid="uid://1frpvv11paxd" path="res://scripts/game.gd" id="1_lnu2h"]
 [ext_resource type="Texture2D" uid="uid://cmhkvdptthx0f" path="res://Sprites/Test_tilemap.png" id="1_lsern"]
 [ext_resource type="PackedScene" uid="uid://dblfe5fohidmp" path="res://scenes/player.tscn" id="2_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://4t5l424au60u" path="res://scenes/moving_platform.tscn" id="4_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://2xyf3wnu5nir" path="res://scenes/portal.tscn" id="5_iywne"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_33adx"]
 texture = ExtResource("1_lsern")
@@ -57,3 +58,6 @@ total_frame_time = 120
 
 [node name="Marker2D" type="Marker2D" parent="moving_platform"]
 position = Vector2(0, -37)
+
+[node name="Portal" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(160, -248)
