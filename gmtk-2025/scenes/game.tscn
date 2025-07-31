@@ -43,7 +43,7 @@ jump_deccent_frames = 15
 wall_jump_input_lock_frames = 10
 jump_hieght_relative_to_player_height = 2.0
 wall_jump_horizontal_multiplier = 2.0
-wall_jump_vertical_multiplier = 0.6
+wall_jump_vertical_multiplier = 0.9
 
 [node name="Camera2D" type="Camera2D" parent="player"]
 zoom = Vector2(4, 4)
