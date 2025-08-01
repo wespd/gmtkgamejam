@@ -35,12 +35,12 @@ tile_set = SubResource("TileSet_we5ph")
 
 [node name="player" parent="." instance=ExtResource("2_yqjtg")]
 position = Vector2(0, -8)
-wall_jump_horizontal_multiplier = 2.0
-wall_jump_vertical_multiplier = 0.9
 jump_accent_frames = 20
 jump_deccent_frames = 15
 wall_jump_input_lock_frames = 10
 jump_hieght_relative_to_player_height = 2.0
+wall_jump_horizontal_multiplier = 2.0
+wall_jump_vertical_multiplier = 0.9
 
 [node name="Camera2D" type="Camera2D" parent="player"]
 zoom = Vector2(4, 4)
