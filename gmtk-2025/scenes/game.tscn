@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://cmhkvdptthx0f" path="res://Sprites/Test_tilemap.png" id="1_lsern"]
 [ext_resource type="PackedScene" uid="uid://dblfe5fohidmp" path="res://scenes/player.tscn" id="2_yqjtg"]
-[ext_resource type="PackedScene" uid="uid://4t5l424au60u" path="res://scenes/moving_platform.tscn" id="4_lbhrr"]
-[ext_resource type="PackedScene" uid="uid://2xyf3wnu5nir" path="res://scenes/portal.tscn" id="5_iywne"]
+[ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="4_lbhrr"]
+[ext_resource type="PackedScene" path="res://scenes/portal.tscn" id="5_iywne"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_33adx"]
 texture = ExtResource("1_lsern")
@@ -35,12 +35,12 @@ tile_set = SubResource("TileSet_we5ph")
 
 [node name="player" parent="." instance=ExtResource("2_yqjtg")]
 position = Vector2(0, -8)
+wall_jump_horizontal_multiplier = 2.0
+wall_jump_vertical_multiplier = 0.9
 jump_accent_frames = 20
 jump_deccent_frames = 15
 wall_jump_input_lock_frames = 10
 jump_hieght_relative_to_player_height = 2.0
-wall_jump_horizontal_multiplier = 2.0
-wall_jump_vertical_multiplier = 0.9
 
 [node name="Camera2D" type="Camera2D" parent="player"]
 zoom = Vector2(4, 4)

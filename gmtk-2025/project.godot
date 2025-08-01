@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="gmtk 2025"
-run/main_scene="uid://bjw44i4cqva8s"
-config/features=PackedStringArray("4.4", "Forward Plus")
+run/main_scene="res://scenes/Levels.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
