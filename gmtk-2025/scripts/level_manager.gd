@@ -4,10 +4,10 @@ const LEVELS : Array[PackedScene] = [preload("res://scenes/game.tscn"), preload(
 
 var current_level_object : Node2D
 
-var current_level : int = 3
+var current_level : int = 0
 var current_loop : int = 0
 
-var layers : Array[TileMapLayer] = []
+var layers : Array[LoopTileMapLayer] = []
 var spawn_locations : Array[SpawnMarker] = []
 
 var player_respawn_location : Vector2
@@ -22,7 +22,7 @@ func _ready():
 	EventBus.next_loop.connect(on_next_loop)
 	EventBus.player_death.connect(respawn_player)
 	for child in get_tree().current_scene.get_children(true):
-		if child is TileMapLayer:
+		if child is LoopTileMapLayer:
 			layers.append(child)
 	for child in get_tree().current_scene.get_children(true):
 		if child is SpawnMarker:
