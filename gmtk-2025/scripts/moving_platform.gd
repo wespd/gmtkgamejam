@@ -37,7 +37,7 @@ func _physics_process(delta):
 		is_frozen = true
 		timer.start(cooldown_frame_time / 60)
 	current_frame_time += 1 if is_moving_up else -1
-	position = lerp(starting_position, target_position, float(current_frame_time) / float(total_frame_time))
+	global_position = lerp(starting_position, target_position, float(current_frame_time) / float(total_frame_time))
 	
 func unfreeze_movement():
 	is_frozen = false

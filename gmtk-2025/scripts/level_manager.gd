@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 const LEVELS : Array[PackedScene] = [preload("res://scenes/game.tscn"), preload("res://scenes/Levels.tscn")]
