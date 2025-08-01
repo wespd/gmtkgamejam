@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://cmhkvdptthx0f" path="res://Sprites/Test_tilemap.png" id="1_lsern"]
 [ext_resource type="PackedScene" uid="uid://dblfe5fohidmp" path="res://scenes/player.tscn" id="2_yqjtg"]
-[ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="4_lbhrr"]
-[ext_resource type="PackedScene" path="res://scenes/portal.tscn" id="5_iywne"]
+[ext_resource type="PackedScene" uid="uid://4t5l424au60u" path="res://scenes/moving_platform.tscn" id="4_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://2xyf3wnu5nir" path="res://scenes/portal.tscn" id="5_iywne"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_33adx"]
 texture = ExtResource("1_lsern")
