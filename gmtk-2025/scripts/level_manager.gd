@@ -4,7 +4,7 @@ const LEVELS : Array[PackedScene] = [preload("res://scenes/game.tscn"), preload(
 
 var current_level_object : Node2D
 
-var current_level : int = 0
+var current_level : int = 3
 var current_loop : int = 0
 
 var layers : Array[TileMapLayer] = []
