@@ -1,14 +1,14 @@
 [gd_scene load_steps=6 format=3 uid="uid://dp03rkp5uhsvk"]
 
 [ext_resource type="Script" uid="uid://ba6gsb4y6dis1" path="res://scripts/moving_platform.gd" id="1_lh2ux"]
-[ext_resource type="Texture2D" uid="uid://dy4uidqatvapw" path="res://Sprites/Test_tilemap_new.png" id="2_lh2ux"]
+[ext_resource type="Texture2D" uid="uid://ekyoouynbary" path="res://Sprites/Main_Tilemap.png" id="2_lh2ux"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_afg43"]
 size = Vector2(32, 5)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pgg5x"]
 atlas = ExtResource("2_lh2ux")
-region = Rect2(32, 43, 32, 5)
+region = Rect2(0, 91, 32, 5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1tdcd"]
 size = Vector2(30, 2)
