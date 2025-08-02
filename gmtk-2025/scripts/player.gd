@@ -24,6 +24,7 @@ enum FrameDataType
 {
 	COYOTE_JUMP, INPUT_BUFFER, DASH_WIND_UP, WALL_JUMP_LOCK, COYOTE_WALL_JUMP
 }
+var tween : Tween
 
 ##constants for horizontal movement
 var acceleration_speed : float
@@ -45,6 +46,7 @@ var can_input : bool = true
 var can_move : bool = true
 var is_dashing : bool = false
 var is_sliding : bool = false
+var is_dying : bool = false
 
 var last_direction : float
 
@@ -246,6 +248,9 @@ func handle_friction(delta : float):
 		
 		
 func handle_animations():
+	if is_dying:
+		sprite_2d.play("death")
+		return
 	if velocity.x < 0:
 		sprite_2d.flip_h = true
 	elif velocity.x > 0:
@@ -270,8 +275,19 @@ func handle_animations():
 		sprite_2d.play("idle")
 		
 func on_hit(body : Node2D):
+	tween = get_tree().create_tween()
+	tween.tween_method(set_shader_params, 0.0, 1.0, 0.5)
+	can_move = false
+	await tween.finished
+	set_shader_params(0.0)
+	can_move = true
 	EventBus.player_death.emit()
 	
+func on_death_complete():
+	is_dying = false
+	can_move = true
+	EventBus.player_death.emit()
+	sprite_2d.animation_finished.disconnect(on_death_complete)
 	
 func on_death():
 	velocity = Vector2.ZERO
@@ -281,3 +297,6 @@ func on_enter_portal(body : Node2D):
 	
 func on_wall_jump_complete():
 	can_input = true
+	
+func set_shader_params(value : float):
+	sprite_2d.material.set_shader_parameter("progress", value)

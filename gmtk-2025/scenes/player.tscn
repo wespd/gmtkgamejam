@@ -1,7 +1,18 @@
-[gd_scene load_steps=25 format=3 uid="uid://dblfe5fohidmp"]
+[gd_scene load_steps=35 format=3 uid="uid://dblfe5fohidmp"]
 
 [ext_resource type="Script" uid="uid://b7hd2yrulslfy" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Shader" uid="uid://c4lwkljgcv523" path="res://scenes/dissolve.gdshader" id="1_qhqgy"]
 [ext_resource type="Texture2D" uid="uid://r3g1no6nohmo" path="res://Sprites/Golem_new.png" id="3_qhqgy"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dqkch"]
+shader = ExtResource("1_qhqgy")
+shader_parameter/progress = 0.0
+shader_parameter/block_size = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qhqgy"]
+shader = ExtResource("1_qhqgy")
+shader_parameter/progress = 0.0
+shader_parameter/block_size = 1.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]
 atlas = ExtResource("3_qhqgy")
@@ -30,6 +41,34 @@ region = Rect2(48, 64, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_4r5pv"]
 atlas = ExtResource("3_qhqgy")
 region = Rect2(64, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_60mlk"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(80, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i4ail"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(80, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a38lo"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(80, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ni07"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(80, 80, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l71n6"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(64, 80, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ke2ow"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(48, 80, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ujl30"]
+atlas = ExtResource("3_qhqgy")
+region = Rect2(32, 80, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
 atlas = ExtResource("3_qhqgy")
@@ -110,6 +149,32 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_60mlk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i4ail")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a38lo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ni07")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l71n6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ke2ow")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ujl30")
+}],
+"loop": false,
+"name": &"death",
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_dqkch")
 }, {
 "duration": 1.0,
@@ -177,6 +242,7 @@ size = Vector2(15, 15)
 size = Vector2(16, 16)
 
 [node name="player" type="CharacterBody2D"]
+material = SubResource("ShaderMaterial_dqkch")
 script = ExtResource("1_g2els")
 wall_jump_horizontal_multiplier = 0.5
 wall_jump_vertical_multiplier = 0.4
@@ -184,8 +250,9 @@ wall_drag_multiplier = 0.15
 max_y_velocity = 300.0
 
 [node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_qhqgy")
 sprite_frames = SubResource("SpriteFrames_f1ej7")
-animation = &"walk"
+animation = &"accending"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
