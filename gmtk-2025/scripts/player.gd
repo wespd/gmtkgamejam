@@ -22,8 +22,14 @@ const DIMENSIONS : Vector2 = Vector2(16,16)
 
 @export_category("sounds")
 @export var walk_sounds : Array[AudioStreamWAV] = []
+@export var dash_sounds : Array[AudioStreamWAV] = []
+@export var woosh_sounds : Array[AudioStreamWAV] = []
 @export var walk_noise_delay_frames : int = 15
 @onready var audio_stream_player = $AudioStreamPlayer
+@export var slide_sound : AudioStreamWAV
+@export var death_sound : AudioStreamWAV
+@onready var woosh_player = $wooshPlayer
+
 
 
 enum FrameDataType 
@@ -84,6 +90,7 @@ func _physics_process(delta):
 	handle_dash()
 	handle_friction(delta)
 	handle_animations()
+	handle_sounds()
 	move_and_slide()
 	
 
@@ -219,6 +226,8 @@ func handle_wall_jump():
 		current_frame_data[FrameDataType.INPUT_BUFFER] = input_buffer_frames
 		can_input = false
 		wall_jump_cooldown_timer.start(float(wall_jump_input_lock_frames) / 60)
+		woosh_player.stream = woosh_sounds.pick_random()
+		woosh_player.playing = true
 			
 	
 		
@@ -278,17 +287,46 @@ func handle_animations():
 			sprite_2d.play("accending")
 	elif current_horizontal_movement:
 		sprite_2d.play("walk")
+	else:
+		sprite_2d.play("idle")
+		
+func handle_sounds():
+	if not is_on_wall():
+		if audio_stream_player.playing and audio_stream_player.stream == slide_sound:
+			audio_stream_player.playing = false
+			audio_stream_player.stream = null
+
+	if velocity.y == initial_jump_velocity:
+		print("jump")
+
+	elif Input.is_action_just_released("dash") and is_dashing and is_on_floor():
+		audio_stream_player.stream = dash_sounds.pick_random()
+		audio_stream_player.playing = true
+		woosh_player.stream = woosh_sounds.pick_random()
+		woosh_player.playing = true
+		print("dash sound!")
+	elif velocity.y == -initial_jump_velocity:
+		woosh_player.stream = woosh_sounds.pick_random()
+		woosh_player.playing = true
+	elif is_on_wall_only():
+		if not audio_stream_player.playing and audio_stream_player.stream != slide_sound:
+			audio_stream_player.stream = slide_sound
+			audio_stream_player.playing = true
+
+	elif not is_on_floor():
+		pass
+	elif current_horizontal_movement and current_frame_data[FrameDataType.DASH_WIND_UP] == 0:
 		if current_frame_data[FrameDataType.WALK_NOISE_DELAY] >= walk_noise_delay_frames:
 			audio_stream_player.stream = walk_sounds.pick_random()
 			audio_stream_player.playing = true
 			current_frame_data[FrameDataType.WALK_NOISE_DELAY] = 0
-	else:
-		sprite_2d.play("idle")
 		
 func on_hit(body : Node2D):
 	velocity = Vector2.ZERO
 	tween = get_tree().create_tween()
 	tween.tween_method(set_shader_params, 0.0, 1.0, 0.5)
+	audio_stream_player.stream = death_sound
+	audio_stream_player.playing = true
 	can_move = false
 	await tween.finished
 	set_shader_params(0.0)
