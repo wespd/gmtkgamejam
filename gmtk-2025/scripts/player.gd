@@ -20,9 +20,15 @@ const DIMENSIONS : Vector2 = Vector2(16,16)
 @export var wall_drag_multiplier : float
 @export var max_y_velocity : float
 
+@export_category("sounds")
+@export var walk_sounds : Array[AudioStreamWAV] = []
+@export var walk_noise_delay_frames : int = 15
+@onready var audio_stream_player = $AudioStreamPlayer
+
+
 enum FrameDataType 
 {
-	COYOTE_JUMP, INPUT_BUFFER, DASH_WIND_UP, WALL_JUMP_LOCK, COYOTE_WALL_JUMP
+	COYOTE_JUMP, INPUT_BUFFER, DASH_WIND_UP, WALL_JUMP_LOCK, COYOTE_WALL_JUMP, WALK_NOISE_DELAY
 }
 var tween : Tween
 
@@ -126,6 +132,7 @@ func increment_frame_data():
 	current_frame_data[FrameDataType.COYOTE_JUMP] += 1
 	current_frame_data[FrameDataType.COYOTE_WALL_JUMP] += 1
 	current_frame_data[FrameDataType.WALL_JUMP_LOCK] += 1
+	current_frame_data[FrameDataType.WALK_NOISE_DELAY] += 1
 	if Input.is_action_pressed("dash") and is_on_floor():
 		velocity.x = 0
 		current_frame_data[FrameDataType.DASH_WIND_UP] += 1
@@ -271,10 +278,15 @@ func handle_animations():
 			sprite_2d.play("accending")
 	elif current_horizontal_movement:
 		sprite_2d.play("walk")
+		if current_frame_data[FrameDataType.WALK_NOISE_DELAY] >= walk_noise_delay_frames:
+			audio_stream_player.stream = walk_sounds.pick_random()
+			audio_stream_player.playing = true
+			current_frame_data[FrameDataType.WALK_NOISE_DELAY] = 0
 	else:
 		sprite_2d.play("idle")
 		
 func on_hit(body : Node2D):
+	velocity = Vector2.ZERO
 	tween = get_tree().create_tween()
 	tween.tween_method(set_shader_params, 0.0, 1.0, 0.5)
 	can_move = false
