@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=4 uid="uid://bjw44i4cqva8s"]
+[gd_scene load_steps=30 format=4 uid="uid://bjw44i4cqva8s"]
 
 [ext_resource type="Texture2D" uid="uid://dy4uidqatvapw" path="res://Sprites/Test_tilemap_new.png" id="1_xia0j"]
 [ext_resource type="Texture2D" uid="uid://ekyoouynbary" path="res://Sprites/Main_Tilemap.png" id="2_gfy75"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dp03rkp5uhsvk" path="res://scenes/wide_moving_platform.tscn" id="7_elgn6"]
 [ext_resource type="Script" uid="uid://h7vfrufaxi5k" path="res://scripts/LoopEnabaler.gd" id="8_cae5c"]
 [ext_resource type="Texture2D" uid="uid://ubiwiugqc2l0" path="res://Sprites/signs.png" id="9_tno38"]
+[ext_resource type="AudioStream" uid="uid://cg8ftcj5qssp0" path="res://sound_track.wav" id="12_ry2bx"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xtq8a"]
 texture = ExtResource("1_xia0j")
@@ -510,3 +511,8 @@ metadata/_custom_type_script = "uid://h7vfrufaxi5k"
 
 [node name="Sprite2D" type="Sprite2D" parent="LoopObject11"]
 texture = SubResource("AtlasTexture_3o4me")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("12_ry2bx")
+volume_db = -13.811
+autoplay = true
