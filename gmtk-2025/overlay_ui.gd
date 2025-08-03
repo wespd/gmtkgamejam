@@ -16,6 +16,11 @@ func _ready():
 			is_running = false
 			final_time_node.text = "Final Time: %0.2f" %time)
 	EventBus.enable_player.connect(func(): is_running = true)
+	EventBus.restart_game.connect(
+		func():
+			player_deaths = 0
+			time = 0.0
+	)
 
 func _process(delta):
 	if is_running:

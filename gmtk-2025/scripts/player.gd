@@ -299,6 +299,7 @@ func handle_sounds():
 		audio_stream_player.stream = null
 		woosh_player.playing = false
 		woosh_player.stream = null
+		return
 	if not is_on_wall():
 		if audio_stream_player.playing and audio_stream_player.stream == slide_sound:
 			audio_stream_player.playing = false

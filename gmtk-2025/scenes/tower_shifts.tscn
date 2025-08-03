@@ -71,6 +71,7 @@ stretch_mode = 4
 layout_mode = 2
 max_value = 2.0
 step = 0.1
+value = 1.0
 script = ExtResource("4_nrlsb")
 audio_bus_name = "music"
 metadata/_custom_type_script = "uid://dpsefq7gfnxqi"

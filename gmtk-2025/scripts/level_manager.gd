@@ -16,13 +16,30 @@ var final_location : Vector2
 
 func respawn_player():
 	player.position = player_respawn_location
-	final_location = get_tree().current_scene.get_child(get_tree().current_scene.get_child_count(true) - 1).position
+	if not final_location:
+		final_location = get_tree().current_scene.get_child(get_tree().current_scene.get_child_count(true) - 1).position
 
+
+func restart():
+	await get_tree().process_frame
+	current_level = 0
+	current_loop = 0
+	layers.clear()
+	spawn_locations.clear()
+	for child in get_tree().current_scene.get_children(true):
+			if child is LoopTileMapLayer:
+				layers.append(child)
+	for child in get_tree().current_scene.get_children(true):
+		if child is SpawnMarker:
+			spawn_locations.append(child)
+	player_respawn_location = spawn_locations[current_level].position
+	load_level()
 
 func _ready():
 	EventBus.next_level.connect(on_next_level)
 	EventBus.next_loop.connect(on_next_loop)
 	EventBus.player_death.connect(respawn_player)
+	EventBus.restart_game.connect(restart)
 	for child in get_tree().current_scene.get_children(true):
 		if child is LoopTileMapLayer:
 			layers.append(child)
