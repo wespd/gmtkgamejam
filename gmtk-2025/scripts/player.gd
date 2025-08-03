@@ -61,6 +61,7 @@ var is_sliding : bool = false
 var is_dying : bool = false
 
 var last_direction : float
+var is_player_disabled : bool = false
 
 @onready var hurtbox = $Hurtbox
 @onready var wall_jump_cooldown_timer = $WallJumpCooldownTimer
@@ -78,6 +79,8 @@ func _ready():
 	area_2d.body_entered.connect(on_enter_portal)
 	wall_jump_cooldown_timer.timeout.connect(on_wall_jump_complete)
 	EventBus.player_death.connect(on_death)
+	EventBus.disable_player.connect(player_disable)
+	EventBus.enable_player.connect(player_enable)
 	LevelManager.player = self
 	
 	
@@ -148,7 +151,7 @@ func handle_inputs():
 	if Input.is_action_just_pressed("jump"):
 		current_frame_data[FrameDataType.INPUT_BUFFER] = 0
 
-	if not can_input or not can_move:
+	if not can_input or not can_move or is_player_disabled:
 		current_horizontal_movement = 0
 		return
 
@@ -160,7 +163,7 @@ func handle_inputs():
 func handle_jump(delta : float):
 	if is_on_floor():
 		current_frame_data[FrameDataType.COYOTE_JUMP] = 0
-	if not can_move:
+	if not can_move or is_player_disabled:
 		return
 		
 	velocity.y += acceleration_due_to_gravity * delta * (1 if velocity.y < 0 or is_dashing else gravity_snap_multiplier)
@@ -172,7 +175,7 @@ func handle_jump(delta : float):
 	else:
 		is_sliding = false
 	
-	if not can_input or current_frame_data[FrameDataType.DASH_WIND_UP] != 0:
+	if not can_input or current_frame_data[FrameDataType.DASH_WIND_UP] != 0 or is_player_disabled:
 		return
 		
 	if current_frame_data[FrameDataType.COYOTE_JUMP] < coyote_jump_frames and current_frame_data[FrameDataType.INPUT_BUFFER]  < input_buffer_frames:
@@ -192,7 +195,7 @@ func handle_movement(delta : float):
 		velocity.x = max_speed * direction
 		
 func handle_wall_jump():
-	if not can_input or not can_move or is_dashing:
+	if not can_input or not can_move or is_dashing or is_player_disabled:
 		return
 		
 	var left_colliding : bool = false
@@ -234,7 +237,7 @@ func handle_wall_jump():
 	
 	
 func handle_dash():
-	if not can_input or not can_move:
+	if not can_input or not can_move or is_player_disabled:
 		return
 
 		
@@ -252,7 +255,7 @@ func handle_dash():
 	if not Input.is_action_pressed("dash"):
 		current_frame_data[FrameDataType.DASH_WIND_UP] = 0
 func handle_friction(delta : float):
-	if current_horizontal_movement != 0.0 and not is_dashing or velocity.x == 0 or not can_input:
+	if current_horizontal_movement != 0.0 and not is_dashing or velocity.x == 0 or not can_input or is_player_disabled:
 		return
 	
 	var direction = velocity.abs().x / velocity.x
@@ -291,6 +294,11 @@ func handle_animations():
 		sprite_2d.play("idle")
 		
 func handle_sounds():
+	if is_player_disabled:
+		audio_stream_player.playing = false
+		audio_stream_player.stream = null
+		woosh_player.playing = false
+		woosh_player.stream = null
 	if not is_on_wall():
 		if audio_stream_player.playing and audio_stream_player.stream == slide_sound:
 			audio_stream_player.playing = false
@@ -323,6 +331,7 @@ func handle_sounds():
 		
 func on_hit(body : Node2D):
 	velocity = Vector2.ZERO
+	UIOverlay.player_deaths += 1
 	tween = get_tree().create_tween()
 	tween.tween_method(set_shader_params, 0.0, 1.0, 0.5)
 	audio_stream_player.stream = death_sound
@@ -333,17 +342,18 @@ func on_hit(body : Node2D):
 	can_move = true
 	EventBus.player_death.emit()
 	
-func on_death_complete():
-	is_dying = false
-	can_move = true
-	EventBus.player_death.emit()
-	sprite_2d.animation_finished.disconnect(on_death_complete)
 	
 func on_death():
 	velocity = Vector2.ZERO
 func on_enter_portal(body : Node2D):
 	EventBus.next_level.emit()
 	
+
+func player_disable():
+	is_player_disabled = true
+
+func player_enable():
+	is_player_disabled = false
 	
 func on_wall_jump_complete():
 	can_input = true

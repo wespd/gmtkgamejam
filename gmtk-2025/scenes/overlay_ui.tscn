@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://ch4m4jwi5f0dr"]
+
+[ext_resource type="Script" uid="uid://dx0xj31gstdhv" path="res://overlay_ui.gd" id="1_bt2gj"]
+
+[node name="overlay_ui" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bt2gj")
+
+[node name="TimeLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_right = 0.5
+anchor_bottom = 0.088
+offset_left = 0.199999
+offset_top = 1.0
+offset_bottom = -16.024
+theme_override_font_sizes/normal_font_size = 64
+text = "10.000"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="DeathLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.976
+anchor_bottom = 0.088
+offset_right = -0.352051
+offset_bottom = -0.0240059
+grow_horizontal = 0
+theme_override_font_sizes/normal_font_size = 64
+text = "deaths: 0 "
+scroll_active = false
+tab_size = 8
+horizontal_alignment = 2
+vertical_alignment = 1

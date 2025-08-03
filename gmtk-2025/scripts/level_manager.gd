@@ -1,4 +1,3 @@
-@tool
 extends Node
 
 const LEVELS : Array[PackedScene] = [preload("res://scenes/game.tscn"), preload("res://scenes/Levels.tscn")]
@@ -13,9 +12,11 @@ var spawn_locations : Array[SpawnMarker] = []
 
 var player_respawn_location : Vector2
 var player : Node2D
+var final_location : Vector2
 
 func respawn_player():
 	player.position = player_respawn_location
+	final_location = get_tree().current_scene.get_child(get_tree().current_scene.get_child_count(true) - 1).position
 
 
 func _ready():
@@ -45,6 +46,12 @@ func on_next_loop():
 	
 func load_level():
 	player_respawn_location = spawn_locations[current_level].position
+	if current_loop == 4:
+		player_respawn_location = final_location
+		EventBus.player_death.emit()
+		EventBus.game_over.emit()
+		return
+
 	for i in layers.size():
 		if i != current_loop:
 			layers[i].collision_enabled = false

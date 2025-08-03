@@ -1,0 +1,90 @@
+[gd_scene load_steps=7 format=3 uid="uid://bjqcngas5iug3"]
+
+[ext_resource type="Script" uid="uid://ctomnwp0r73dq" path="res://scripts/tower_shifts.gd" id="1_6onua"]
+[ext_resource type="Texture2D" uid="uid://cw1x70agx80bx" path="res://Sprites/The_Tower_Shifts....png" id="1_yypyi"]
+[ext_resource type="Texture2D" uid="uid://b52wj6opie6bl" path="res://Sprites/UI.png" id="3_qtjkv"]
+[ext_resource type="Script" uid="uid://dpsefq7gfnxqi" path="res://scripts/VolumeSlider.gd" id="4_nrlsb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j8ymy"]
+atlas = ExtResource("3_qtjkv")
+region = Rect2(1, 0, 24, 7)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f2j4k"]
+atlas = ExtResource("3_qtjkv")
+region = Rect2(32, 0, 15, 7)
+
+[node name="Control" type="Control" node_paths=PackedStringArray("shifting_text", "ui")]
+z_index = 10
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_6onua")
+shifting_text = NodePath("TextureRect")
+ui = NodePath("VBoxContainer")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_yypyi")
+stretch_mode = 5
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -53.0
+offset_bottom = 53.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture = SubResource("AtlasTexture_j8ymy")
+stretch_mode = 4
+
+[node name="VolumeSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 2.0
+step = 0.1
+script = ExtResource("4_nrlsb")
+audio_bus_name = "music"
+metadata/_custom_type_script = "uid://dpsefq7gfnxqi"
+
+[node name="TextureRect3" type="TextureRect" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture = SubResource("AtlasTexture_f2j4k")
+stretch_mode = 4
+
+[node name="VolumeSlider2" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 2.0
+step = 0.1
+script = ExtResource("4_nrlsb")
+audio_bus_name = "sfx"
+metadata/_custom_type_script = "uid://dpsefq7gfnxqi"

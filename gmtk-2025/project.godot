@@ -19,6 +19,11 @@ config/icon="res://icon.svg"
 
 EventBus="*res://scripts/event_bus.gd"
 LevelManager="*res://scripts/level_manager.gd"
+TowerShift="*res://scenes/tower_shifts.tscn"
+
+[gui]
+
+theme/custom_font="uid://dgsj3686k2qss"
 
 [input]
 

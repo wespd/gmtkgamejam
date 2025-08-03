@@ -294,5 +294,7 @@ visible = false
 shape = SubResource("RectangleShape2D_dqkch")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"sfx"
 
 [node name="wooshPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"sfx"
