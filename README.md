@@ -23,7 +23,7 @@
 
 ## 🚀 How to Run Locally
 If you want to pull this repository and run it on your local machine:
-1. Clone this repository: `git clone https://github.com/wespd/[Repo-Name].git`
+1. Clone this repository: `git clone https://github.com/wespd/gmtkgamejam.git`
 2. Open the **Godot Engine**.
 3. Click **Import** and select the `project.godot` file from the cloned folder.
 4. Press `F5` to run the project!
